@@ -198,20 +198,34 @@ dependencies:
   - zlib=1.2.13=h8cc25b3_0
   - zstd=1.5.5=hd43e919_0
   - pip:
+    - absl-py==2.0.0
+    - accelerate==0.25.0
     - aiohttp==3.9.1
     - aiosignal==1.3.1
     - async-timeout==4.0.3
+    - click==8.1.7
+    - contourpy==1.1.1
+    - cycler==0.12.1
     - datasets==2.15.0
     - dill==0.3.7
+    - evaluate==0.4.1
+    - fonttools==4.47.0
     - frozenlist==1.4.1
     - fsspec==2023.10.0
     - huggingface-hub==0.19.4
+    - joblib==1.3.2
+    - kiwisolver==1.4.5
+    - matplotlib==3.7.4
     - multidict==6.0.4
     - multiprocess==0.70.15
+    - nltk==3.8.1
     - numpy==1.24.4
     - pyarrow==14.0.1
     - pyarrow-hotfix==0.6
+    - pyparsing==3.1.1
     - regex==2023.10.3
+    - responses==0.18.0
+    - rouge-score==0.1.2
     - safetensors==0.4.1
     - tokenizers==0.15.0
     - torchaudio==2.1.2

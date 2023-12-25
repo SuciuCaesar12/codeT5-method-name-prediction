@@ -3,5 +3,4 @@ code-summarization/experiments/
 code-summarization/datasets/
 mask-prediction/datasets/
 mask-prediction/experiments/
-environment.yml
 .idea/

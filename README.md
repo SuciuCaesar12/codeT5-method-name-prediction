@@ -6,7 +6,7 @@
 #### [Methodology](#methodology)
 #### [Results](#results)
 #### [How to run](#how-to-run)
-### [Conclusions](#conclusions)
+#### [Conclusions](#conclusions)
 
 # Introduction <a name="introduction"></a>
 * __Task Description__: Given the body and signature of a method written in Java, predict its name.
