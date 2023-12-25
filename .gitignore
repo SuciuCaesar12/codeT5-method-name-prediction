@@ -1,5 +1,7 @@
 data/
 code-summarization/experiments/
-evaluations/
-trained_models/
 code-summarization/datasets/
+mask-prediction/datasets/
+mask-prediction/experiments/
+environment.yml
+.idea/
