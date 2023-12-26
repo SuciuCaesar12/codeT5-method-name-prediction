@@ -67,6 +67,28 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
 * **Evaluation Metrics:**
     * __Exact Match Accuracy__: The percentage of predictions that exactly match the target.
     * __ROUGE__: The average of the ROUGE-1, ROUGE-2, ROUGE-L, and ROUGE-LSUM scores. We assume the natural composition of method names and calculate ROUGE scores on the word level by splitting predicted and target names into words.
+    
+    * __Code Summarization__:
+  
+      | Metric      | 0-5   | 5-10  | 10-20 | 20-50 |
+      |-------------|-------|-------|-------|-------|
+      | exact_match | 0.441 | 0.358 | 0.235 | 0.179 |
+      | rouge1      | 0.669 | 0.594 | 0.515 | 0.462 |
+      | rouge2      | 0.433 | 0.287 | 0.215 | 0.136 |
+      | rougeL      | 0.668 | 0.593 | 0.516 | 0.464 |
+      | rougeLsum   | 0.668 | 0.593 | 0.515 | 0.462 |
+
+    * __Mask Prediction__:
+
+      | Metric      | 0-5   | 5-10  | 10-20 | 20-50 |
+      |-------------|-------|-------|-------|-------|
+      | exact_match | 0.443 | 0.311 | 0.260 | 0.194 |
+      | rouge1      | 0.663 | 0.580 | 0.575 | 0.577 |
+      | rouge2      | 0.418 | 0.263 | 0.257 | 0.210 |
+      | rougeL      | 0.662 | 0.578 | 0.573 | 0.577 |
+      | rougeLsum   | 0.662 | 0.578 | 0.574 | 0.575 |
+
+
 
 # How to Run <a name="how-to-run"></a>
 
@@ -107,7 +129,7 @@ conda env create -f environment.yml
     - The notebook used for both strategies is `notebooks_utils/train.ipynb`. 
     - Make sure to set the task variable in the notebook to `mask-prediction` or `code-summarization` depending on the strategy you want to use.
     - Set `path_to_model` to the path of the model you want to fine-tune.
-    - If `path_to_model` is set to `None`, the model will be downloaded from the HuggingFace model hub based on `checkpoint`
+    - If `path_to_model` is set to `None`, the model will be downloaded from the HuggingFace model hub based on `checkpoint` and `task` variables.
 
 ### Evaluate Models:
 
@@ -121,7 +143,7 @@ conda env create -f environment.yml
 2. **Evaluate Predictions**
     - To evaluate the predictions, use the `notebooks_utils/evaluate.ipynb` notebook.
     - Set `path_to_predictions` to the path of the .jsonl file containing the predictions.
-    - Set `path_to_save_metrics` to the path of the .yaml file where the metrics will be saved.
+    - Set `path_to_save_metrics` to the folder where you want to save the evaluation metrics.
 
 # Conclusion <a name="conclusion"></a>
 
