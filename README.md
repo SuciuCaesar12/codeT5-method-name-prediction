@@ -1,12 +1,12 @@
 # Method Name Prediction using Transformers
 
 ## Table of Contents
-#### [Introduction](#introduction)
-#### [Dataset](#dataset)
-#### [Methodology](#methodology)
-#### [Results](#results)
-#### [How to run](#how-to-run)
-#### [Conclusions](#conclusions)
+- [Introduction](#introduction)
+- [Dataset](#dataset)
+- [Methodology](#methodology)
+- [Results](#results)
+- [How to Run](#how-to-run)
+- [Conclusions](#conclusions)
 
 # Introduction <a name="introduction"></a>
 * __Task Description__: Given the body and signature of a method written in Java, predict its name.
@@ -88,7 +88,7 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
       | rougeL      | 0.662 | 0.578 | 0.573 | 0.577 |
       | rougeLsum   | 0.662 | 0.578 | 0.574 | 0.575 |
 
-
+    * The results indicate that `code summarization` performs better than `mask prediction` on shorter method names, while `mask prediction` performs better on longer method names.
 
 # How to Run <a name="how-to-run"></a>
 
