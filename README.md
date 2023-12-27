@@ -66,7 +66,9 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
 
 * **Evaluation Metrics:**
     * __Exact Match Accuracy__: The percentage of predictions that exactly match the target.
-    * __ROUGE__: The average of the ROUGE-1, ROUGE-2, ROUGE-L, and ROUGE-LSUM scores. We assume the natural composition of method names and calculate ROUGE scores on the word level by splitting predicted and target names into words.
+    * __ROUGE__: The average of the ROUGE-1, ROUGE-2, ROUGE-L, and ROUGE-LSUM scores. 
+    We assume the natural composition of method names and calculate ROUGE scores on the word level by splitting predicted and target names into words.
+    The columns represent the range of number of lines in the body.
     
     * __Code Summarization__:
   
@@ -107,11 +109,11 @@ conda env create -f environment.yml
     - Specify the path to the source code directory in the `notebooks_utils/extract_data.ipynb` file.
 
 3. **Run Data Extraction Notebook:**
-    - Execute the notebook; it will process the data and save it into three distinct files: `intellij-train.csv`, `intellij-val.csv`, and `intellij-test.csv`.
+    - Execute the notebook; it will process the data and save it into three distinct files: `intellij-train.csv`, `intellij-val.csv`, and `intellij-test.csv` where the data is split into 60%, 20%, and 20% respectively.
 
 ### Create Datasets:
 
-1. **Dataset Creation Notebook:**
+1. **Dataset Creation Notebooks:**
     - In each directory (`code_summarization` and `mask_prediction`) there is `create_dataset.ipynb` notebook.
 
 2. **Provide Input:**
