@@ -140,8 +140,8 @@ conda env create -f environment.yml
         - `labels`: sequence of token ids for the decoder target
 
     - Additionally, a `.json` file will be generated, containing information on how the dataset was created.
-    __Note__: For computational reasons, the dataset was already tokenized and the length of the sequences was determined by the longest sequence in the batch. 
-    During any inference on a model, the dataset should not be shuffled and the batch size chosen should evenly divide the batch size used for creating the dataset to ensure that examples batched together have the same length.
+   
+   __Note__: For computational reasons, the dataset was already tokenized and the length of the sequences was determined by the longest sequence in the batch. During any inference on a model, the dataset should not be shuffled and the batch size chosen should evenly divide the batch size used for creating the dataset to ensure that examples batched together have the same length.
 
 ### Fine-tune Models:
 
