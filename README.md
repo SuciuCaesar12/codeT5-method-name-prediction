@@ -91,7 +91,7 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
       | rougeL      | 0.662 | 0.578 | 0.573 | 0.577 |
       | rougeLsum   | 0.662 | 0.578 | 0.574 | 0.575 |
 
-    * The results indicate that `code summarization` performs better than `mask prediction` on shorter methods, while `mask prediction` performs better on longer method names.
+    * The results indicate that `code summarization` performs better than `mask prediction` on shorter methods, while `mask prediction` performs better on longer methods.
 
 # How to Run <a name="how-to-run"></a>
 
