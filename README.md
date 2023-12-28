@@ -9,11 +9,14 @@
 - [Conclusions](#conclusions)
 
 # Introduction <a name="introduction"></a>
+
+* __Summary__: This repository contains the code for the test task given in __Jetbrains Application Internship 2023__.
+
 * __Task Description__: Given the body and signature of a method written in Java, predict its name.
 e.g. given the following method:
 
 ```java
-public int ___(int a, int b) {
+public int _(int a, int b) {
     return a + b;
 }
 ```
@@ -22,9 +25,9 @@ the model should predict the name `add` for this method.
 # Dataset <a name="dataset"></a>
 * We extracted all the methods from [IntelliJ IDEA Community Edition](https://github.com/JetBrains/intellij-community) source code.
 * This was done by iterating over all the files in the source code and extracting all the methods using regex patterns.
-* Training set size: 102,629 methods (60%)
-* Validation set size: 34,212 methods (20%)
-* Test set size: 34,212 methods (20%)
+  * Training set size: 102K methods (60%)
+  * Validation set size: 34K methods (20%)
+  * Test set size: 34K methods (20%)
 
 __Note__: The validation set was used for hyperparameter tuning and the test set was used for final evaluation. For the final model we trained on the train and validation sets combined.
 
@@ -37,14 +40,14 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
 - **Model Used:** [Salesforce/codet5p-220m-bimodal](https://huggingface.co/Salesforce/codet5-small-220M-bimodal)
 
 - **Approach:**
-    - The encoder-decoder model, as outlined in the paper, acts as a code-to-text summarization model.
+    - The encoder-decoder model, as outlined in the paper, can act as a code-to-text summarization model.
     - Encoder takes the method body and signature as input.
-    - Decoder input is `[TDEC] The name of the method is: `. `[TDEC]` indicates the start of text generation in the base model.
+    - Decoder takes as input `[TDEC] The name of the method is: `. `[TDEC]` indicates for the decoder the start of text generation.
     - Target is the method name.
-    - This strategy, referred to as `Code Summarization`, serves as a surrogate for `Method Name Prediction`. It involves conditioning the decoder's input on specific natural language text, focusing on predicting method names. The constrained input space is believed to retain knowledge acquired during pre-training, applicable to other code-to-text downstream tasks.
+    - This strategy, referred to as `Code Summarization`, serves as a surrogate objective for `Method Name Prediction`. It involves conditioning the decoder's input on specific natural language text, focusing on predicting method names.
 
 - **Example:**
-    - Encoder Input: `public int </s>(int a, int b) { return a + b; }` (using `</s>` as the separator).
+    - Encoder Input: `public int </s>(int a, int b) { return a + b; }` (`</s>` special separator token)
     - Decoder Input: `[TDEC] The name of the method is: `
     - Target: `add`
 
@@ -53,9 +56,8 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
 - **Model Used:** [Salesforce/codet5p-220m](https://huggingface.co/Salesforce/codet5p-220m)
 
 - **Approach:**
-    - Fine-tuning is performed on the model, which was originally trained with the objective of `Span Denoising`, involving masking spans of code and predicting the masked tokens.
-    - Method name in the method body and signature is masked and used as input to the encoder.
-    - Decoder predicts the masked tokens, which correspond to the method name.
+    - For fine-tuning the model we sue `Span Denoising` objective as outlined in the paper.
+    - We take the whole method and mask its name and then train the model to predict the masked name.
 
 - **Example:**
     - Input: `public int <extra_id_0>(int a, int b) { return a + b; }`
@@ -66,8 +68,7 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
 
 * **Evaluation Metrics:**
     * __Exact Match Accuracy__: The percentage of predictions that exactly match the target.
-    * __ROUGE__: The average of the ROUGE-1, ROUGE-2, ROUGE-L, and ROUGE-LSUM scores. 
-    We assume the natural composition of method names and calculate ROUGE scores on the word level by splitting predicted and target names into words.
+    * __ROUGE__: We assume the natural composition of method names and calculate ROUGE scores on the word level by splitting predicted and target names into words.
     The columns represent the range of number of lines in the body.
     
     * __Code Summarization__:
@@ -90,7 +91,7 @@ We begin by leveraging the [CodeT5+: Open Code Large Language Models for Code Un
       | rougeL      | 0.662 | 0.578 | 0.573 | 0.577 |
       | rougeLsum   | 0.662 | 0.578 | 0.574 | 0.575 |
 
-    * The results indicate that `code summarization` performs better than `mask prediction` on shorter method names, while `mask prediction` performs better on longer method names.
+    * The results indicate that `code summarization` performs better than `mask prediction` on shorter methods, while `mask prediction` performs better on longer method names.
 
 # How to Run <a name="how-to-run"></a>
 
@@ -109,7 +110,11 @@ conda env create -f environment.yml
     - Specify the path to the source code directory in the `notebooks_utils/extract_data.ipynb` file.
 
 3. **Run Data Extraction Notebook:**
-    - Execute the notebook; it will process the data and save it into three distinct files: `intellij-train.csv`, `intellij-val.csv`, and `intellij-test.csv` where the data is split into 60%, 20%, and 20% respectively.
+    - Execute the notebook; it will iterate through all `.java` files in the source code directory and extract all methods using regex patterns.
+    - The data will be saved in three `.csv` files: `intellij-{train,valid,test}.csv` with 60%, 20%, 20% splits respectively.
+    - The files will contain 2 columns: 
+      - `code`: the entire method with its name, too.
+      - `name`: contains the method name.
 
 ### Create Datasets:
 
@@ -121,9 +126,22 @@ conda env create -f environment.yml
 
 3. **Generate Datasets:**
     - Execute the notebook; it will create a `datasets.Dataset` object from the provided .csv file. 
-    The resulting data will be saved into a .jsonl file. 
-    Additionally, a .json file will be generated, containing information on how the dataset was created.
-    Please refer to the notebook for more details on the dataset creation process and how it can be used for inference on a model.
+    - The resulting data will be saved into a `.jsonl` file with the following features:
+      - __Code Summarization__:
+        - `input_ids`: sequence of token ids for the encoder
+        - `attention_mask`: attention mask for the encoder
+        - `decoder_input_ids`: sequence of token ids for the decoder
+        - `decoder_attention_mask`: attention mask for the decoder
+        - `labels`: sequence of token ids for the decoder target
+
+      - __Mask Prediction__:
+        - `input_ids`: sequence of token ids for the encoder
+        - `attention_mask`: attention mask for the encoder
+        - `labels`: sequence of token ids for the decoder target
+
+    - Additionally, a `.json` file will be generated, containing information on how the dataset was created.
+    - __Note__: For computational reasons, the dataset was already tokenized and the length of the sequences was determined by the longest sequence in the batch. 
+    During any inference on a model, the dataset should not be shuffled and the batch size chosen should evenly divide the batch size used for creating the dataset to ensure that examples batched together have the same length.
 
 ### Fine-tune Models:
 
@@ -136,16 +154,20 @@ conda env create -f environment.yml
 ### Evaluate Models:
 
 1. **Get Predictions**
-    - To get predictions on some dataset, use the `notebooks_utils/inference.ipynb` notebook.
+    - To get predictions on a dataset, use the `notebooks_utils/inference.ipynb` notebook.
     - Similar to the training notebook, set the task variable to `mask-prediction` or `code-summarization` depending on the strategy the model was fine-tuned with.
     - Set `path_to_model` to the path of the model you want to make predictions with.
     - Set `path_to_dataset` to the path of the dataset you want to make predictions on.
-    - The notebook will generate a .jsonl file containing the predictions.
+    - The notebook will generate a `.jsonl` file with the following features:
+      - `input_code`: the input code (text)
+      - `labels`: the method name (text)
+      - `prediction`: the predicted method name (text)
 
 2. **Evaluate Predictions**
     - To evaluate the predictions, use the `notebooks_utils/evaluate.ipynb` notebook.
     - Set `path_to_predictions` to the path of the .jsonl file containing the predictions.
     - Set `path_to_save_metrics` to the folder where you want to save the evaluation metrics.
+    - The notebook will create a `metrics.yml` file containing the evaluation metrics. for different ranges of method lengths.
 
 # Conclusion <a name="conclusion"></a>
 
@@ -153,4 +175,8 @@ conda env create -f environment.yml
     - Predicting the method name solely based on the method body and signature presents a challenging task, even for human understanding.
     - Valuable information may often be distributed across the class where the method is defined or within method calls embedded in the method body.
     - An ideal scenario for prediction is when the method functions independently, devoid of dependencies on other classes or methods, as seen in standalone algorithm implementations because the information is localized within the method body and signature.
-    
+    - However, the ideal case doesn't occur often in practice, and the method body and signature are often insufficient to predict the method name.
+
+2. **Future improvements:**
+    - Incorporate information regarding the class or the structure of the project to improve the prediction.
+    - Explore other data sources to fine-tune the model on.
